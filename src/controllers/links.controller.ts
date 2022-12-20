@@ -15,3 +15,11 @@ export function addLink(originalUrl: string): Promise<Link> {
 
   return linksService.add(link);
 }
+
+export function getLink(shortUrlId: string): Promise<Link | unknown> {
+  return linksService.get(shortUrlId.trim());
+}
+
+export function removeLink(shortUrlId: string): Promise<Link | unknown> {
+  return linksService.remove(shortUrlId.trim());
+}

@@ -28,13 +28,13 @@ export class LinksService {
   add(link: Link): Promise<Link> {
     return this.connectToDatabase()
       .countDocuments()
-      .then(value => {
+      .then((value: number) => {
         link._id = value + 1;
 
         return this.connectToDatabase()
           .insertOne(link)
           .then(() => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve: Function, reject: Function) => {
               resolve(link);
             });
           });

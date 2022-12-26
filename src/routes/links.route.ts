@@ -7,8 +7,10 @@ export const router: Router = Router();
 
 router.get('/:linkId', (req: Request, res: Response): void => {
   getLink(req.params.linkId)
-    .then((response: Link | unknown) => {
-      res.json(response);
+    .then((response: Link | any) => {
+      if (response) {
+        res.redirect(response.originalUrl);
+      }
     });
 });
 

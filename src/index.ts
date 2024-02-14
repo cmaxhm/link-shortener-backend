@@ -1,8 +1,8 @@
 import e, { Express } from 'express';
-import { apiMainRouter } from "./routes";
+import { apiMainRouter } from './api/api-router.router';
 
 const app: Express = e();
-const port: number = 3000;
+const port = process.env.SERVER_PORT ?? 3000;
 
 apiMainRouter(app);
 

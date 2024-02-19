@@ -6,15 +6,21 @@
   "scripts": {
     "dev": "tsnd ./src/index.ts",
     "build": "tsc",
-    "start": "node ./dist/index.ts",
+    "start": "node ./dist/src/index.js",
+    "typeorm": "npm run build && npx typeorm -d ./dist/src/api/v1/database/index.js",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
     "test": "jest --watch --coverage"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.15",
     "@types/jest": "^29.2.4",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^18.11.16",
     "@types/pg": "^8.11.0",
     "jest": "^29.3.1",
@@ -23,11 +29,13 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.4",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.0"
+    "reflect-metadata": "^0.2.1",
+    "typeorm": "^0.3.20"
   }
 }

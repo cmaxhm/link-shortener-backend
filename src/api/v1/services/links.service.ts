@@ -1,49 +1,112 @@
-import { Model } from 'sequelize';
-import { generateUrlSlug } from '../../../utilities/generate-url-slug.utility';
-import { sequelize } from '../database/index.';
-import { DeletedEntity } from '../interfaces/deleted-entity.interface';
+import { FindManyOptions, Repository } from 'typeorm';
 import { UserLinksPaginationQueryParameters } from '../interfaces/user-links-pagination-query-parameters.interface';
+import { generateUrlSlug } from '../utilities/generate-url-slug.utility';
+import { AppDataSource } from '../database';
 import { Link } from '../models/link.model';
-import { LinkSchema } from '../schemas/link.schema';
+import { User } from '../models/user.model';
 
 export class LinksService {
-  async findAll(queryParams: Partial<UserLinksPaginationQueryParameters>): Promise<Link[]> {
-    const options: Partial<UserLinksPaginationQueryParameters> = { where: {} };
+  /**
+   * The repository for the Link model.
+   *
+   * @private
+   */
+  private repository: Repository<Link>;
 
-    if (queryParams.user_id) { options.where!.user_id = queryParams.user_id; }
-
-    if (queryParams.limit && queryParams.offset) {
-      options.limit = queryParams.limit;
-      options.offset = queryParams.offset;
-    }
-
-    return await sequelize.models.Link.findAll(options);
+  constructor() {
+    this.repository = AppDataSource.getRepository(Link);
   }
 
-  async findById(id: number): Promise<Link | null> {
-    return await sequelize.models.Link.findByPk(id);
-  }
-
-  async create(link: typeof LinkSchema): Promise<Model<Link>> {
-    const linkToCreate = {
-      ...link,
-      slug: generateUrlSlug()
+  /**
+   * Find all links.
+   *
+   * @param queryParams The query parameters for the request.
+   */
+  public async findAll(queryParams: UserLinksPaginationQueryParameters): Promise<Link[]> {
+    const { user_id, offset, limit } = queryParams;
+    const options: FindManyOptions<Link> = {
+      relations: ['user'],
+      select: [
+        'id',
+        'slug',
+        'url',
+        'created_at',
+        'updated_at',
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.created_at',
+        'user.updated_at'
+      ] as (keyof Link)[]
     };
 
-    return await sequelize.models.Link.create(linkToCreate);
+    if (user_id) { options.where = { user_id }; }
+    if (offset && limit) { options.skip = offset; options.take = limit; }
+
+    return await this.repository.find(options);
   }
 
-  async update(id: number, link: typeof LinkSchema): Promise<Link | undefined> {
-    const linkResult = await this.findById(id);
-
-    return await linkResult?.update(link);
+  /**
+   * Find a link by its id.
+   *
+   * @param id The ID of the link.
+   */
+  public async findById(id: number): Promise<Link | null> {
+    return await this.repository.findOne({
+      where: { id },
+      select: [
+        'id',
+        'slug',
+        'url',
+        'created_at',
+        'updated_at',
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.created_at',
+        'user.updated_at'
+      ] as (keyof Link)[]
+    });
   }
 
-  async delete(id: number): Promise<DeletedEntity> {
+  /**
+   * Find a link by its slug.
+   *
+   * @param link The userId and url of the link.
+   */
+  public async create(link: { userId: number, url: string }): Promise<Link> {
+    const user = await AppDataSource.getRepository(User).findOneBy({ id: link.userId });
+    const linkResult = new Link();
+
+    linkResult.user_id = user?.id;
+    linkResult.url = link.url;
+    linkResult.slug = generateUrlSlug();
+
+    return await this.repository.save(linkResult);
+  }
+
+  /**
+   * Update a link by its ID.
+   *
+   * @param id The ID of the link.
+   * @param link The link object to replace for.
+   */
+  public async update(id: number, link: Link): Promise<Link> {
+    let linkResult = await this.findById(id);
+
+    linkResult = { ...linkResult, ...link };
+
+    return await this.repository.save(linkResult);
+  }
+
+  /**
+   * Delete a link by its ID.
+   *
+   * @param id The ID of the link.
+   */
+  public async delete(id: number): Promise<Link[]> {
     const linkResult = await this.findById(id);
 
-    await linkResult?.destroy();
-
-    return { id };
+    return await this.repository.remove([linkResult!]);
   }
 }

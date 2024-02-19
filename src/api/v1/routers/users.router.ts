@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { DeletedEntity } from '../interfaces/deleted-entity.interface';
-import { generateErrorResponse } from '../../../utilities/generate-error-response.utility';
+import { generateErrorResponse } from '../utilities/generate-error-response.utility';
 import { User } from '../models/user.model';
 import { UsersService } from '../services/users.service';
 
@@ -38,7 +37,7 @@ usersRouter.post('/', async (request: Request, response: Response) => {
   try {
     const result: User = await usersService.create(request.body);
 
-    response.json(result);
+    response.status(201).json(result);
   } catch (error) {
     generateErrorResponse(response, 500, 'An error occurred creating the User.', error);
   }
@@ -56,7 +55,7 @@ usersRouter.put('/:id', async (request: Request, response: Response) => {
 
 usersRouter.delete('/:id', async (request: Request, response: Response) => {
   try {
-    const result: DeletedEntity = await usersService.delete(parseInt(request.params.id));
+    const result: User[] = await usersService.delete(parseInt(request.params.id));
 
     response.json(result);
   } catch (error) {

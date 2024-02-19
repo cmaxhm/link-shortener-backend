@@ -1,18 +1,26 @@
-import { Model, Sequelize } from 'sequelize';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Link } from './link.model';
 
-export class User extends Model {
-  static readonly tableName = 'users';
+@Entity({ name: 'users' })
+export class User {
+  @PrimaryGeneratedColumn({ type: 'integer' })
+  public id: number | undefined;
 
-  static associate(sequelize: Sequelize) {
-    User.hasMany(sequelize.models.Link, { as: 'links', foreignKey: 'userId' });
-  }
+  @Column({ type: 'varchar', length: 30, unique: true })
+  public username: string | undefined;
 
-  static configure(sequelize: Sequelize) {
-    return {
-      sequelize,
-      modelName: 'User',
-      tableName: User.tableName,
-      timestamps: false
-    };
-  }
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  public email: string | undefined;
+
+  @Column({ type: 'varchar', length: 100, select: false })
+  public password: string | undefined;
+
+  @OneToMany(() => Link, link => link.user)
+  public links: Link[] | undefined;
+
+  @Column({ type: 'date', default: () => 'CURRENT_DATE' })
+  public created_at: string | undefined;
+
+  @Column({ type: 'date', default: () => 'CURRENT_DATE' })
+  public updated_at: string | undefined;
 }

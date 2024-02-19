@@ -1,7 +1,6 @@
 import { Request, Response, Router } from 'express';
-import { DeletedEntity } from '../interfaces/deleted-entity.interface';
 import { LinksService } from '../services/links.service';
-import { generateErrorResponse } from '../../../utilities/generate-error-response.utility';
+import { generateErrorResponse } from '../utilities/generate-error-response.utility';
 import { Link } from '../models/link.model';
 
 export const linksRouter: Router = Router();
@@ -38,7 +37,7 @@ linksRouter.post('/', async (request: Request, response: Response) => {
   try {
     const result: Link = await linksService.create(request.body);
 
-    response.json(result);
+    response.status(201).json(result);
   } catch (error) {
     generateErrorResponse(response, 500, 'An error occurred creating the Link.', error);
   }
@@ -56,7 +55,7 @@ linksRouter.put('/:id', async (request: Request, response: Response) => {
 
 linksRouter.delete('/:id', async (request: Request, response: Response) => {
   try {
-    const result: DeletedEntity = await linksService.delete(parseInt(request.params.id));
+    const result: Link[] = await linksService.delete(parseInt(request.params.id));
 
     response.json(result);
   } catch (error) {

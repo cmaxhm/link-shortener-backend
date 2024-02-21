@@ -14,9 +14,9 @@ export function validateAccessToken(request: Request, response: Response, next: 
 
   if (accessToken) {
     jwt.verify(accessToken, process.env.API_SECRET_KEY!, (error: jwt.VerifyErrors | null) => {
-      return error ? generateErrorResponse(response, 403, 'Invalid access token.') : next();
+      return error ? generateErrorResponse(response, 401, 'Unauthorized.') : next();
     });
   } else {
-    generateErrorResponse(response, 403, 'Unauthorized.');
+    generateErrorResponse(response, 401, 'Unauthorized.');
   }
 }

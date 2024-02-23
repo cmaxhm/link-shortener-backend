@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { validateAccessToken } from '../middlewares/validate-access-token.middleware';
 import { LinksService } from '../services/links.service';
 import { generateErrorResponse } from '../utilities/generate-error-response.utility';
 import { Link } from '../models/link.model';
@@ -7,7 +8,7 @@ export const linksRouter: Router = Router();
 
 const linksService = new LinksService();
 
-linksRouter.get('/', async (request: Request, response: Response) => {
+linksRouter.get('/', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: Link[] = await linksService.findAll(request.query);
 
@@ -17,7 +18,7 @@ linksRouter.get('/', async (request: Request, response: Response) => {
   }
 });
 
-linksRouter.get('/:id', async (request: Request, response: Response) => {
+linksRouter.get('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: Link | null = await linksService.findById(parseInt(request.params.id));
 
@@ -33,7 +34,7 @@ linksRouter.get('/:id', async (request: Request, response: Response) => {
   }
 });
 
-linksRouter.post('/', async (request: Request, response: Response) => {
+linksRouter.post('/', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: Link = await linksService.create(request.body);
 
@@ -43,7 +44,7 @@ linksRouter.post('/', async (request: Request, response: Response) => {
   }
 });
 
-linksRouter.put('/:id', async (request: Request, response: Response) => {
+linksRouter.put('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: Link | undefined = await linksService.update(parseInt(request.params.id), request.body);
 
@@ -53,7 +54,7 @@ linksRouter.put('/:id', async (request: Request, response: Response) => {
   }
 });
 
-linksRouter.delete('/:id', async (request: Request, response: Response) => {
+linksRouter.delete('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: Link[] = await linksService.delete(parseInt(request.params.id));
 

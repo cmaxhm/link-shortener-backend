@@ -8,6 +8,9 @@ import { JwtResponse } from '../interfaces/jwt-response.interface';
  */
 export function generateJwt(payload: any): JwtResponse {
   return {
+    id: payload.id,
+    username: payload.username,
+    email: payload.email,
     token: jwt.sign(
       payload,
       process.env.API_SECRET_KEY!,

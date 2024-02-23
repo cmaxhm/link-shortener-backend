@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { validateAccessToken } from '../middlewares/validate-access-token.middleware';
 import { generateErrorResponse } from '../utilities/generate-error-response.utility';
 import { User } from '../models/user.model';
 import { UsersService } from '../services/users.service';
@@ -7,7 +8,7 @@ export const usersRouter: Router = Router();
 
 const usersService = new UsersService();
 
-usersRouter.get('/', async (request: Request, response: Response) => {
+usersRouter.get('/', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: User[] = await usersService.findAll();
 
@@ -17,7 +18,7 @@ usersRouter.get('/', async (request: Request, response: Response) => {
   }
 });
 
-usersRouter.get('/:id', async (request: Request, response: Response) => {
+usersRouter.get('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: User | null = await usersService.findById(parseInt(request.params.id));
 
@@ -43,7 +44,7 @@ usersRouter.post('/', async (request: Request, response: Response) => {
   }
 });
 
-usersRouter.put('/:id', async (request: Request, response: Response) => {
+usersRouter.put('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: User | undefined = await usersService.update(parseInt(request.params.id), request.body);
 
@@ -53,7 +54,7 @@ usersRouter.put('/:id', async (request: Request, response: Response) => {
   }
 });
 
-usersRouter.delete('/:id', async (request: Request, response: Response) => {
+usersRouter.delete('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
     const result: User[] = await usersService.delete(parseInt(request.params.id));
 

@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../database';
+import { UserData } from '../interfaces/user-data.interface';
 import { User } from '../models/user.model';
 import { hashPassword } from '../utilities/hash-password.utility';
 
@@ -64,8 +65,9 @@ export class UsersService {
    * @param id The ID of the user to update.
    * @param user The user data to update.
    */
-  public async update(id: number, user: User): Promise<User> {
+  public async update(id: number, user: User): Promise<Partial<UserData>> {
     let userResult = await this.findById(id);
+    let editedUser: Partial<UserData> = {};
 
     userResult = {
       ...userResult,
@@ -73,7 +75,19 @@ export class UsersService {
       password: await hashPassword(user.password!)
     };
 
-    return await this.repository.save(userResult);
+    await this.repository
+      .save(userResult)
+      .then((user: User) => {
+        editedUser = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          created_at: user.created_at,
+          updated_at: user.updated_at
+        };
+      });
+
+    return editedUser;
   }
 
   /**

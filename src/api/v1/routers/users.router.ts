@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { UserData } from '../interfaces/user-data.interface';
 import { validateAccessToken } from '../middlewares/validate-access-token.middleware';
 import { generateErrorResponse } from '../utilities/generate-error-response.utility';
 import { User } from '../models/user.model';
@@ -46,7 +47,7 @@ usersRouter.post('/', async (request: Request, response: Response) => {
 
 usersRouter.put('/:id', validateAccessToken, async (request: Request, response: Response) => {
   try {
-    const result: User | undefined = await usersService.update(parseInt(request.params.id), request.body);
+    const result: Partial<UserData> | undefined = await usersService.update(parseInt(request.params.id), request.body);
 
     response.json(result);
   } catch (error) {

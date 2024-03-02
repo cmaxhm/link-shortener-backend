@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../database';
 import { UserData } from '../interfaces/user-data.interface';
+import { Link } from '../models/link.model';
 import { User } from '../models/user.model';
 import { hashPassword } from '../utilities/hash-password.utility';
 

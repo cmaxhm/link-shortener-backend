@@ -70,7 +70,7 @@ export class LinksService {
   }
 
   /**
-   * Find a link by its slug.
+   * Create a link.
    *
    * @param link The userId and url of the link.
    */
